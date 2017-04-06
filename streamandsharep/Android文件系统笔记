@@ -1,0 +1,59 @@
+
+ https://developer.android.google.cn/guide/topics/data/data-storage.html#filesExternal
+
+① share_prefs
+ SharedPreferences sharep = getSharedPreferences("sharep", MODE_PRIVATE);
+        String key = sharep.getString("key", null);
+        Log.i(TAG, "btnsharep: sharep value = " + key);
+
+   通过getSharedPreferences("sharep", MODE_PRIVATE);sharep永远非空。
+
+   sharep.getString("key", null);一定会要求defValue，是否为空，看defValue和key对应的value值
+
+   sharep只支持存储int\float\long\boolean\String等5种类型的数据
+
+ ②其他存储方法
+
+ 内部存储 cache files shared_prefs
+
+ 外部存储 sd(->file | ->cache)
+ 数据库 sqliteDatabase
+
+③ getDir()
+当用户卸载您的应用时，此目录及其内容将被删除。
+在您的内部存储空间内创建（或打开现有的）目录。创建和files|cache|share_prefs同级的文件
+
+④ getFilesDir()
+当用户卸载您的应用时，此目录及其内容将被删除。
+  获取在其中存储内部文件的文件系统目录的绝对路径。在files目录下操作
+
+⑤   lalala = openFileOutput("lalala", MODE_PRIVATE);操作的也是files
+⑥   FileInputStream lalala1 = openFileInput("lalala");操作files
+
+⑦ 读取不存在的目录，报异常libcore.io.ErrnoException: open failed: ENOENT (No such file or directory)
+
+⑧ cache
+当用户卸载您的应用时，此目录及其内容将被删除。
+如果您想要缓存一些数据，而不是永久存储这些数据，应该使用 getCacheDir() 来打开一个 File，它表示您的应用应该将临时缓存文件保存到的内部目录。
+当设备的内部存储空间不足时，Android 可能会删除这些缓存文件以回收空间。
+
+
+⑨ 使用外部存储设备
+ 该存储可能是可移除的存储介质（例如 SD 卡）或内部（不可移除）存储。
+ 保存到外部存储的文件是全局可读取文件，而且，在计算机上启用 USB 大容量存储以传输文件后，可由用户修改这些文件。
+ sd中文件没权限，可卸载sd卡在pc上操作sd卡。
+
+ getExternalStorageState() 方法将返回您可能需要检查的其他状态（例如介质是否处于共享 [连接到计算]、完全缺失、错误移除等状态）。
+ ->保存应用私有文件
+ 注：当用户卸载您的应用时，此目录及其内容将被删除。
+  如果您正在处理的文件不适合其他应用使用（例如仅供您的应用使用的图形纹理或音效），
+  则应该通过调用 getExternalFilesDir() 来使用外部存储上的私有存储目录。此方法还会采用 type 参数指定子目录的类型（例如 DIRECTORY_MOVIES）。
+  如果您不需要特定的媒体目录，请传递 null 以接收应用私有目录的根目录。
+
+ ->保存可与其他应用共享的文件
+ 执行此操作时，应使用共享的公共目录之一，例如 Music/、Pictures/ 和 Ringtones/ 等。
+ 要获取表示相应的公共目录的 File，请调用 getExternalStoragePublicDirectory()，
+ 向其传递您需要的目录类型，例如 DIRECTORY_MUSIC、DIRECTORY_PICTURES、 DIRECTORY_RINGTONES 或其他类型。
+ 通过将您的文件保存到相应的媒体类型目录，系统的媒体扫描程序可以在系统中正确地归类您的文件（例如铃声在系统设置中显示为铃声而不是音乐）。
+ ->保存缓存文件
+ 要打开表示应该将缓存文件保存到的外部存储目录的 File，请调用 getExternalCacheDir()。 如果用户卸载您的应用，这些文件也会被自动删除。
